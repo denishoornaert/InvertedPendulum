@@ -1,0 +1,4 @@
+
+[submodule "ultrascale-spinal-wrapper"]
+	path = ultrascale-spinal-wrapper
+	url = git@github.com:denishoornaert/ultrascale-spinal-wrapper.git
