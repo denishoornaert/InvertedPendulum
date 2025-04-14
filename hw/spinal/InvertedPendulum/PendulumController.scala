@@ -17,6 +17,7 @@ import scala.annotation.switch
 import spinal.lib.bus.misc.SizeMapping
 import spinal.core
 
+// Integration of debouncer, encoder and PWM controller
 case class PendulumController(width: Int = 32, debounceCycles: Long = 0x2d0f00)
     extends KV260(withLPD_HPM0 = true, withIO_PMOD0 = true, withIO_PMOD1 = true, withTo_PS_IRQ = true) {
 
@@ -24,7 +25,7 @@ case class PendulumController(width: Int = 32, debounceCycles: Long = 0x2d0f00)
     return base >> 3
   }
   val encoder_mmio = 2 * width
-  val period = 1999980
+  val period = 1999980 // period of the PWM
   val base = io.lpd.hpm0.apertures(0).base
 
   val axifactory = new Axi4SlaveFactory(io.lpd.hpm0)
@@ -60,10 +61,11 @@ case class PendulumController(width: Int = 32, debounceCycles: Long = 0x2d0f00)
 
   for (i <- 0 until 2) {
     axifactory.read(encoder(i).io.position, base + offset(i * encoder_mmio))
-    axifactory.driveFlow(encoder(i).io.position_update, base + offset(i * encoder_mmio), width)
+    // Spinal Flow to correctly reset the logic upon update
+    axifactory.driveFlow(encoder(i).io.position_update, base + offset(i * encoder_mmio), width) // position update via AXI
 
   }
-  axifactory.write(threshold, base + offset(2 * encoder_mmio))
+  axifactory.write(threshold, base + offset(2 * encoder_mmio)) // threshold via AXI
 }
 
 object PendulumControllerVerilog extends App() {

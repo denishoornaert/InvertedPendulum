@@ -4,12 +4,9 @@ import spinal.core._
 import spinal.lib._
 import spinal.core.sim._
 
-//===----------------------------------------------------------------------===//
-///
-/// Counter to delay the propgation of a pressed button. To clean the signal
-/// the counter counts to zero thus mitigating bounces a during push and release
-///
-//===----------------------------------------------------------------------===//
+
+// Counter to delay the propgation of a pressed button. To clean the signal
+// the counter counts to zero thus mitigating bounces a during push and release
 case class DebounceCounter(width: Int) extends Component {
   val io = new Bundle {
     val input = in Bool ()

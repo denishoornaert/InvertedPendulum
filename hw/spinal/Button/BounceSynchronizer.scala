@@ -3,11 +3,8 @@ package button
 import spinal.core._
 import spinal.lib._
 
-//===----------------------------------------------------------------------===//
-///
-/// Route input signal through arraylen flip flops
-///
-//===----------------------------------------------------------------------===//
+
+// Route input signal through arraylen flip flops
 case class BounceSynchronizer(arraylen: Int) extends Component {
   val io = new Bundle {
     val input = in Bool ()

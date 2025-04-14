@@ -5,12 +5,8 @@ import spinal.core.sim._
 import spinal.lib._
 import spinal.core
 
-//===----------------------------------------------------------------------===//
-///
-/// Routes the input signal through two flip flops and
-/// forwards it to the debounce counter
-///
-//===----------------------------------------------------------------------===//
+// Routes the input signal through two flip flops and
+// forwards it to the debounce counter
 case class Debouncer() extends Component {
   val io = new Bundle {
     val input = in Bool ()

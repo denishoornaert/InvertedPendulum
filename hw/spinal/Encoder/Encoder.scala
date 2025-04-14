@@ -3,13 +3,18 @@ package encoder
 import spinal.core._
 import spinal.lib._
 
+
+// State machine to detect the direction of a rotary encoder
+// keeps track of the last two states of the encoder
+// based on the information of the last two states, the direction is determined
+// only enabled if no reference update in progress
 case class Encoder(width: Int) extends Component {
   val io = new Bundle {
     val pinA = in Bool ()
     val pinB = in Bool ()
     val pinIndex = in Bool ()
-    val enable = in Bool ()
-    val delta = out SInt (width bits)
+    val enable = in Bool () 
+    val delta = out SInt (width bits) // positional change 
     val index = out Bool ()
   }
 
@@ -65,7 +70,7 @@ case class Encoder(width: Int) extends Component {
     }
   }
 
-  // is always updated to have a reference
+  // only update the old values if we are in a valid state
   when(valid) {
     regA_old := pinA
     regB_old := pinB

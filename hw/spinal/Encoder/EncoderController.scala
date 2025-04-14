@@ -11,6 +11,12 @@ import kv260.interface.axi._
 import ultrascaleplus.configport._
 import scripts._
 
+// =====================================================
+// WARNING: This SpinalHDL component is NOT TESTED!
+// =====================================================
+
+// This is a simple example of a rotary encoder controller
+// It additionally fires an interrupt when a position updated has been conducted
 case class EncoderController(width: Int = 32)
     extends KV260(withLPD_HPM0 = true, withIO_PMOD0 = true, withTo_PS_IRQ = true) {
   val axifactory = new Axi4SlaveFactory(io.lpd.hpm0)
