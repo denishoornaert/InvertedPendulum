@@ -4,12 +4,11 @@ import spinal.core._
 import spinal.lib._
 import spinal.lib.bus.amba4.axi._
 
-import encoder._
-import button._
+import encoder.EncoderCounter
+import button.Debouncer
 import pwm.PWM
 
-import kv260._
-import kv260.interface.axi._
+import kr260._
 import ultrascaleplus.configport._
 import ultrascaleplus.scripts._
 
@@ -19,7 +18,7 @@ import spinal.core
 
 // Integration of debouncer, encoder and PWM controller
 case class PendulumController(width: Int = 32, debounceCycles: Long = 0x2d0f00)
-    extends KV260(withLPD_HPM0 = true, withIO_PMOD0 = true, withIO_PMOD1 = true, withTo_PS_IRQ = true) {
+    extends KR260(config = new KR260Config(withLPD_HPM0 = true, withIO_PMOD0 = true, withIO_PMOD1 = true, withPL_PS_IRQ0 = 3)) {
 
   def offset(base: BigInt): BigInt = {
     return base >> 3
@@ -35,7 +34,10 @@ case class PendulumController(width: Int = 32, debounceCycles: Long = 0x2d0f00)
   val pwm = PWM(period = period)
 
   io.pmod1.asOutput()
-  io.pmod1.clearAll()
+  io.pmod0.asInput()
+  for(i <- 1 until 8) {
+    io.pmod1(i) := False
+  }
   encoder(0).io.pinA := io.pmod0(0)
   encoder(0).io.pinB := io.pmod0(1)
   encoder(0).io.pinIndex := False
@@ -53,11 +55,12 @@ case class PendulumController(width: Int = 32, debounceCycles: Long = 0x2d0f00)
   val encoder_irq = (encoder(0).io.invalid.fall() || encoder(1).io.invalid.fall())
   pwm.io.threshold.valid := threshold =/= previous
   pwm.io.threshold.payload := threshold.resized
+  io.pmod1(0) := pwm.io.signal
 
   for (i <- 0 until 2) {
-    io.pl_to_ps.irq(i) := debouncer(i).io.output.fall()
+    io.irq.toPS0(i) := debouncer(i).io.output.fall()
   }
-  io.pl_to_ps.irq(2) := encoder_irq
+  io.irq.toPS0(2) := encoder_irq
 
   for (i <- 0 until 2) {
     axifactory.read(encoder(i).io.position, base + offset(i * encoder_mmio))

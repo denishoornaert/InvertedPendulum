@@ -36,7 +36,7 @@ case class EncoderCounter(width: Int = 64) extends Component {
   } elsewhen (rising) {
     position := last_position
   } otherwise {
-    position := position + encoder1.io.delta
+    position := position + encoder.io.delta
   }
 
   when(io.position_update.valid) {

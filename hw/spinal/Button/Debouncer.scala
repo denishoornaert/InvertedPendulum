@@ -3,7 +3,6 @@ package button
 import spinal.core._
 import spinal.core.sim._
 import spinal.lib._
-import spinal.core
 
 // Routes the input signal through two flip flops and
 // forwards it to the debounce counter
