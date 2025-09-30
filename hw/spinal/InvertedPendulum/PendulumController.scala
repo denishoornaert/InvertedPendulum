@@ -23,7 +23,7 @@ case class PendulumController(width: Int = 32, debounceCycles: Long = 0x2d0f00)
   def offset(base: BigInt): BigInt = {
     return base >> 3
   }
-  val encoder_mmio = 2 * width
+  val data_width = io.lpd.hpm0.config.dataWidth
   val period = 1999980 // period of the PWM
   val base = io.lpd.hpm0.apertures(0).base
 
@@ -63,12 +63,12 @@ case class PendulumController(width: Int = 32, debounceCycles: Long = 0x2d0f00)
   io.irq.toPS0(2) := encoder_irq
 
   for (i <- 0 until 2) {
-    axifactory.read(encoder(i).io.position, base + offset(i * encoder_mmio))
+    axifactory.read(encoder(i).io.position, base + offset(i * data_width))
     // Spinal Flow to correctly reset the logic upon update
-    axifactory.driveFlow(encoder(i).io.position_update, base + offset(i * encoder_mmio), width) // position update via AXI
+    axifactory.driveFlow(encoder(i).io.position_update, base + offset(i * data_width), width) // position update via AXI
 
   }
-  axifactory.write(threshold, base + offset(2 * encoder_mmio)) // threshold via AXI
+  axifactory.write(threshold, base + offset(2 * data_width)) // threshold via AXI
 }
 
 object PendulumControllerVerilog extends App() {
