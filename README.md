@@ -6,7 +6,7 @@ This project implements the logic to process sensor data for an Inverted Pendulu
 - **InvertedPendulum**: This module integrates the previous three modules with the KR260 board.
 
 ### Button 
-FPGA-implementation to debounce a button input. If the button is pressed, an interrupt is propgated to the CPU. The debouncing logic is based upon the tutorial of [ZipCPU](https://zipcpu.com/blog/2017/08/04/debouncing.html)..
+FPGA-implementation to debounce a button input. If the button is pressed, an interrupt is propgated to the CPU. The debouncing logic is based upon the tutorial of [ZipCPU](https://zipcpu.com/blog/2017/08/04/debouncing.html).
 Architecture
 
 The debouncer module receives its input signal from PMOD0 on the KR260 board. The signal is routed through two/three flip-flops before being passed to the debounce counter. This module filters the signal by delaying propagation based on a counter value. Internally, the debounce counter counts down to zero and then forwards the most recent input signal. When the button has been pressed, an interrupt is triggered to the processing system (PS) via interrupt lane defined by the integrating module.
@@ -21,3 +21,6 @@ This module implements the internal logic to adjusts a PWM signal based on a use
 
 ### InvertedPendulum
 This is the top-level module integrating the previous three modules with the [KR260 board](https://www.amd.com/de/products/system-on-modules/kria/k26/kr260-robotics-starter-kit.html). For this purpose it is using the [ultrascale-spinal-wrapper](https://github.com/denishoornaert/ultrascale-spinal-wrapper/tree/master) library which already provides the necessary configurations. For memory mapped registers we are using Spinal's `AXI4SlaveFactory` which allows us to define how the registers can be addressed. 
+
+### UART
+The branch `uart` contains an additional module to implement a UART controller. This can be helpful for boards with not enough UART interfaces. The implementation is based on the UART controller provided by SpinalHDL.
